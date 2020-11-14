@@ -1,0 +1,21 @@
+version: '3'
+services:
+  reverse_proxy_traefik:
+    container_name: reverse_proxy_traefik
+    image: traefik:v2.3
+    command: --api.insecure=true --providers.docker
+    restart: always
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.whoami.rule=Host(`proxy.boromoi.com`)"
+    ports:
+      - '80:80'
+      - '8080:8080'
+      - '443:443'
+    networks:
+    - web
+    volumes:
+            - "/var/run/docker.sock:/var/run/docker.sock:ro"
+networks:
+  web:
+    external: true

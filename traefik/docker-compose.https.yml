@@ -1,0 +1,32 @@
+version: '3.5'
+services:
+  reverse_proxy_traefik:
+    container_name: reverse_proxy_traefik
+    image: traefik:v2.3
+    restart: always
+    labels:
+    - traefik.enable=true
+    - traefik.http.routers.traefik.rule=Host(`proxy.boromoi.com`)
+    - traefik.http.routers.traefik.service=api@internal
+    - traefik.http.routers.traefik.tls.certresolver=le
+    - traefik.http.middlewares.redirect-to-https.redirectscheme.scheme=https
+    - traefik.http.routers.redirs.rule=hostregexp(`{host:.+}`)
+    - traefik.http.routers.redirs.entrypoints=web
+    - traefik.http.routers.redirs.middlewares=redirect-to-https
+    ports:
+    - '3000:80'
+      #- '8080:8080'
+    - '443:443'
+
+    networks:
+    - applications
+    volumes:
+    - '/var/run/docker.sock:/var/run/docker.sock:ro'
+    - '/etc/localtime:/etc/localtime:ro'
+    - '/var/log/traefik/access.log:/var/log/access.log'
+    - '/opt/applications/traefik/configs/traefik.yml:/etc/traefik/traefik.yml'
+    - '/opt/applications/traefik/configs/acme.json:/acme.json'
+networks:
+  applications:
+    name: applications-network
+    driver: bridge

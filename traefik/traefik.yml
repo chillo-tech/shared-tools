@@ -1,0 +1,32 @@
+global:
+  checkNewVersion: true
+  sendAnonymousUsage: false
+
+log:
+  level: INFO
+  format: common
+
+entryPoints:
+  web:
+    address: ":80"
+  websecure:
+    address: ":443"
+
+providers:
+  docker: true
+
+accessLog:
+  filePath: /var/log/access.log
+
+api:
+    dashboard: true
+    #default: true
+    #insecure: true
+certificatesresolvers:
+  le:
+    acme:
+      email: simachille@yahoo.fr
+      storage: /acme.json
+      httpChallenge:
+        entryPoint: web
+      tlsChallenge: true

@@ -1,0 +1,20 @@
+server {
+  server_name $sername$;
+
+  location / {
+    proxy_pass i http://$serverhost$:$serverport$;
+    proxy_set_header X-Forwarded-Host $host;
+    proxy_set_header X-Forwarded-Proto $scheme;
+
+    proxy_set_header X-Real-IP $remote_addr;
+    proxy_set_header X-Forwarded-For $remote_addr;
+    proxy_set_header Host $host;
+
+    fastcgi_buffers 16 16k;
+    fastcgi_buffer_size 32k;
+    proxy_buffer_size          512k;
+    proxy_buffers              4 512k;
+    proxy_busy_buffers_size    512k;
+
+  }
+}
