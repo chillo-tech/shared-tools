@@ -12,7 +12,6 @@ services:
       - 29661:15672
     networks:
       - rabbitmq-cluster
-
 networks:
   applications-network:
     external:
