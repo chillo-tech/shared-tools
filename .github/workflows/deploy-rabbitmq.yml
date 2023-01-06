@@ -1,5 +1,9 @@
 name: Update rabbitmq
-on: push
+on:
+  push:
+    paths:
+      - 'rabbitmq/*.yml'
+      - '.github/workflows/deploy-rabbitmq.yml'
 jobs:
   
   create-folder:
@@ -22,6 +26,9 @@ jobs:
     runs-on: ubuntu-latest
     needs: create-folder
     steps:
+      - name: clone folder
+        uses: actions/checkout@master
+
       - name: copy file via ssh password
         uses: appleboy/scp-action@master
         with:
@@ -29,8 +36,8 @@ jobs:
           port: ${{ secrets.RECETTE_APPLICATIONS_PORT }}
           username: ${{ secrets.RECETTE_APPLICATIONS_USERNAME }}
           key: ${{ secrets.RECETTE_APPLICATIONS_SSH_PRIVATE_KEY }}
-          source: "rabbitmq"
-          target: "/opt/shared-tools"
+          source: "rabbitmq/docker-compose.yml"
+          target: "/opt/shared-tools/rabbitmq"
 
   run-container:
     name: "Run container"
@@ -48,3 +55,52 @@ jobs:
           docker compose -f /opt/shared-tools/rabbitmq/docker-compose.yml stop
           docker compose -f /opt/shared-tools/rabbitmq/docker-compose.yml rm -f
           docker compose -f /opt/shared-tools/rabbitmq/docker-compose.yml up -d
+  
+  create-vhost:
+    name: Create vhost
+    runs-on: ubuntu-latest
+    needs: [run-container]
+    steps:
+    - name: Create vhost
+      uses: appleboy/ssh-action@master
+      with:
+        host: ${{ secrets.RECETTE_APPLICATIONS_HOST }}
+        port: ${{ secrets.RECETTE_APPLICATIONS_PORT }}
+        username: ${{ secrets.RECETTE_APPLICATIONS_USERNAME }}
+        key: ${{ secrets.RECETTE_APPLICATIONS_SSH_PRIVATE_KEY }}
+        script: |
+          docker compose -f /opt/shared-tools/rabbitmq/docker-compose.yml exec -it rabbitmq-1 rabbitmqctl add_vhost prod-notifications --description 'Prod notifications' --tags prod
+  
+  create-users:
+    name: Create users
+    runs-on: ubuntu-latest
+    needs: [create-vhost]
+    steps:
+    - name: Create users
+      uses: appleboy/ssh-action@master
+      with:
+        host: ${{ secrets.RECETTE_APPLICATIONS_HOST }}
+        port: ${{ secrets.RECETTE_APPLICATIONS_PORT }}
+        username: ${{ secrets.RECETTE_APPLICATIONS_USERNAME }}
+        key: ${{ secrets.RECETTE_APPLICATIONS_SSH_PRIVATE_KEY }}
+        script: |
+          docker compose -f /opt/shared-tools/rabbitmq/docker-compose.yml exec -it rabbitmq-1 rabbitmqctl add_user rbmq_admin administrator
+          docker compose -f /opt/shared-tools/rabbitmq/docker-compose.yml exec -it rabbitmq-1 rabbitmqctl set_permissions -p "/" "rbmq_admin" ".*" ".*" ".*"
+          docker compose -f /opt/shared-tools/rabbitmq/docker-compose.yml exec -it rabbitmq-1 rabbitmqctl set_permissions -p "prod-notifications" "rbmq_admin" ".*" ".*" ".*"
+          docker compose -f /opt/shared-tools/rabbitmq/docker-compose.yml exec -it rabbitmq-1 rabbitmqctl set_user_tags rbmq_admin administrator
+  
+  create-exchanges-queues:
+    name: Create exchanges-queues
+    runs-on: ubuntu-latest
+    needs: [create-users]
+    steps:
+    - name: Create exchanges-queues
+      uses: appleboy/ssh-action@master
+      with:
+        host: ${{ secrets.RECETTE_APPLICATIONS_HOST }}
+        port: ${{ secrets.RECETTE_APPLICATIONS_PORT }}
+        username: ${{ secrets.RECETTE_APPLICATIONS_USERNAME }}
+        key: ${{ secrets.RECETTE_APPLICATIONS_SSH_PRIVATE_KEY }}
+        script: |
+          docker compose -f /opt/shared-tools/rabbitmq/docker-compose.yml exec -it rabbitmq-1 rabbitmqadmin --vhost="prod-notifications" --username=rbmq_admin --password=administrator declare exchange name=tech.notifications.exchange type=headers
+          docker compose -f /opt/shared-tools/rabbitmq/docker-compose.yml exec -it rabbitmq-1 rabbitmqadmin --vhost="prod-notifications" --username=rbmq_admin --password=administrator declare queue name=tech.notifications.queue

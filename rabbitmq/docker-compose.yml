@@ -11,11 +11,9 @@ services:
       - 29561:5672
       - 29661:15672
     networks:
-      - rabbitmq-cluster
-
+      - applications-network
 networks:
   applications-network:
-    external:
       name: applications-network
 volumes:
   rabbitmq:
