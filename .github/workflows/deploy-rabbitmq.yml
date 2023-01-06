@@ -30,8 +30,8 @@ jobs:
         username: ${{ secrets.RECETTE_APPLICATIONS_USERNAME }}
         key: ${{ secrets.RECETTE_APPLICATIONS_SSH_PRIVATE_KEY }}
         script: |
-          sudo mkdir -p /opt/shared-tools/rabbitmq
-          sudo chmod ugo+rwx /opt/shared-tools/rabbitmq
+          sudo mkdir -p /opt/applications/shared-tools/rabbitmq
+          sudo chmod ugo+rwx /opt/applications/shared-tools/rabbitmq
 
   copy-configs:
     name: "copy docker-compose configs"
@@ -46,7 +46,7 @@ jobs:
           username: ${{ secrets.RECETTE_APPLICATIONS_USERNAME }}
           key: ${{ secrets.RECETTE_APPLICATIONS_SSH_PRIVATE_KEY }}
           source: "rabbitmq/docker-compose.yml"
-          target: "/opt/shared-tools/rabbitmq/"
+          target: "/opt/applications/shared-tools/rabbitmq/"
 
   run-container:
     name: "Run container"
@@ -61,6 +61,6 @@ jobs:
         username: ${{ secrets.RECETTE_APPLICATIONS_USERNAME }}
         key: ${{ secrets.RECETTE_APPLICATIONS_SSH_PRIVATE_KEY }}
         script: |
-          docker compose -f /opt/shared-tools/rabbitmq/docker-compose.yml stop
-          docker compose -f /opt/shared-tools/rabbitmq/docker-compose.yml rm -f
-          docker compose -f /opt/shared-tools/rabbitmq/docker-compose.yml up -d
+          docker compose -f /opt/applications/shared-tools/rabbitmq/docker-compose.yml stop
+          docker compose -f /opt/applications/shared-tools/rabbitmq/docker-compose.yml rm -f
+          docker compose -f /opt/applications/shared-tools/rabbitmq/docker-compose.yml up -d
