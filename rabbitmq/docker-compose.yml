@@ -1,1 +1,21 @@
 version: '3.8'
+services:
+  rabbitmq-1:
+    image: rabbitmq:3.8-management
+    container_name: rabbitmq-1
+    hostname: rabbitmq-1
+    restart: always
+    environment:
+      - RABBITMQ_ERLANG_COOKIE=DSHEVCXBBETJJVJWTOWT
+    ports:
+      - 29561:5672
+      - 29661:15672
+    networks:
+      - rabbitmq-cluster
+
+networks:
+  applications-network:
+    external:
+      name: applications-network
+volumes:
+  rabbitmq:
