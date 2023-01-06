@@ -45,7 +45,7 @@ jobs:
           port: ${{ secrets.RECETTE_APPLICATIONS_PORT }}
           username: ${{ secrets.RECETTE_APPLICATIONS_USERNAME }}
           key: ${{ secrets.RECETTE_APPLICATIONS_SSH_PRIVATE_KEY }}
-          source: "${{ github.workspace }}/rabbitmq/docker-compose.yml"
+          source: ${{ github.workspace }}/rabbitmq/docker-compose.yml
           target: "/opt/shared-tools/rabbitmq"
 
   run-container:
