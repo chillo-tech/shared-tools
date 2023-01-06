@@ -19,7 +19,7 @@ services:
     - '443:443'
 
     networks:
-    - applications
+    - applications-monitoring
     volumes:
     - '/var/run/docker.sock:/var/run/docker.sock:ro'
     - '/etc/localtime:/etc/localtime:ro'
@@ -27,6 +27,7 @@ services:
     - '/opt/applications/traefik/configs/traefik.yml:/etc/traefik/traefik.yml'
     - '/opt/applications/traefik/configs/acme.json:/acme.json'
 networks:
-  applications:
-    name: applications-network
+  applications-monitoring:
     driver: bridge
+    external: true
+    name: applications-monitoring

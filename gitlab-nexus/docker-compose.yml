@@ -1,0 +1,53 @@
+version: '3.8'
+services:
+  gitlab-web:
+    image: 'gitlab/gitlab-ee:13.4.5-ee.0'
+    restart: always
+    hostname: 'sources.chillo.fr'
+    container_name: 'gitlab-web'
+    environment:
+      GITLAB_OMNIBUS_CONFIG: |
+        #letsencrypt['enable'] = true
+        external_url 'http://sources.chillo.fr'
+        gitlab_rails['gitlab_shell_ssh_port'] = 3024
+    ports:
+    - '3080:80'
+    #- '3043:443'
+    - '3022:22'
+    volumes:
+      - '/srv/gitlab/config:/etc/gitlab'
+      - '/srv/gitlab/logs:/var/log/gitlab'
+      - '/srv/gitlab/data:/var/opt/gitlab'
+    networks:
+      - ams-architecture-network
+
+  gitlab-ci:
+      container_name: gitlab-ci
+      image: gitlab/gitlab-runner:bleeding
+      restart: always
+      volumes:
+      - /srv/gitlab-runner/config:/etc/gitlab-runner
+      - /var/run/docker.sock:/var/run/docker.sock
+      networks:
+      - ams-architecture-network
+
+  nexus:
+      image: 'sonatype/nexus3:3.28.1'
+      restart: always
+      hostname: 'packages.chillo.fr'
+      container_name: 'nexus'
+      ports:
+      - '3081:8081'
+      - '3082:8082'
+      - '3083:8083'
+      - '3085:8085'
+      - '18444:18444'
+      volumes:
+      - '/srv/nexus/nexus-data:/nexus-data'
+      networks:
+      - ams-architecture-network
+
+networks:
+  ams-architecture-network:
+    driver: bridge
+    name: ams-architecture-network

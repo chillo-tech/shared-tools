@@ -1,0 +1,13 @@
+version: '3'
+services:
+  ci-runner:
+    container_name: ci-runner
+    image: gitlab/gitlab-runner:bleeding
+    restart: always
+    volumes:
+    - /srv/gitlab-runner/config:/etc/gitlab-runner
+    - /var/run/docker.sock:/var/run/docker.sock
+    networks:
+    - web
+networks:
+  web:

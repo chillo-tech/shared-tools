@@ -1,0 +1,13 @@
+{
+	"auths": {
+		"packages.chillo.fr:3082": {
+			"auth": "YWRtaW46bWF0aGVz"
+		},
+		"packages.chillo.fr:3083": {
+			"auth": "YWRtaW46bWF0aGVz"
+		}
+	},
+	"HttpHeaders": {
+		"User-Agent": "Docker-Client/19.03.8 (linux)"
+	}
+}

@@ -1,0 +1,60 @@
+version: '3.8'
+services:
+  elasticsearch:
+    restart: always 
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.12.0
+    container_name: elasticsearch
+    environment:
+      - discovery.type=single-node
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    volumes:
+      - data01:/usr/share/elasticsearch/data
+    ports:
+      - 9200:9200
+    networks:
+      - applications-monitoring
+
+  fluent-bit:
+    image: fluent/fluent-bit:1.7
+    container_name: fluent-bit
+    restart: always
+    volumes:
+      - ./configs/fluent-bit.conf:/fluent-bit/etc/fluent-bit.conf
+    depends_on:
+      - elasticsearch
+    networks:
+      - applications-monitoring
+  kibana:
+    restart: always 
+    image: docker.elastic.co/kibana/kibana:7.12.0
+    container_name: kibana
+    ports:
+      - 5601:5601
+    environment:
+      ELASTICSEARCH_URL: http://elasticsearch:9200
+      ELASTICSEARCH_HOSTS: '["http://elasticsearch:9200"]'
+    networks:
+      - applications-monitoring
+    depends_on:
+      - elasticsearch
+    labels:
+      - "traefik.http.routers.mails.rule=Host(`kibana.chillo.fr`)"
+      - "traefik.http.routers.mails.tls=true"
+      - "traefik.http.routers.mails.tls.certresolver=le"
+
+
+volumes:
+  data01:
+    driver: local
+  data02:
+    driver: local
+  data03:
+    driver: local
+networks:
+  applications-monitoring:
+    driver: bridge
+    external: true
+    name: applications-monitoring
