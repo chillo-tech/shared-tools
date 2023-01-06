@@ -1,8 +1,5 @@
 name: Update rabbitmq
-on:
-  push:
-    paths:
-      - 'rabbitmq/*.yml'
+on: push
 jobs:
   
   create-folder:
