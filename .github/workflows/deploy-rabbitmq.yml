@@ -4,20 +4,7 @@ on:
     paths:
       - 'rabbitmq/*.yml'
 jobs:
-  Explore-GitHub-Actions:
-    runs-on: ubuntu-latest
-    steps:
-      - run: echo "🎉 The job was automatically triggered by a ${{ github.event_name }} event."
-      - run: echo "🐧 This job is now running on a ${{ runner.os }} server hosted by GitHub!"
-      - run: echo "🔎 The name of your branch is ${{ github.ref }} and your repository is ${{ github.repository }}."
-      - name: Check out repository code
-        uses: actions/checkout@v3
-      - run: echo "💡 The ${{ github.repository }} repository has been cloned to the runner."
-      - run: echo "🖥️ The workflow is now ready to test your code on the runner."
-      - name: List files in the repository
-        run: |
-          ls ${{ github.workspace }}
-          ls ${{ github.workspace }}/rabbitmq
+  
   create-folder:
     name: Create folder
     runs-on: ubuntu-latest
@@ -30,8 +17,8 @@ jobs:
         username: ${{ secrets.RECETTE_APPLICATIONS_USERNAME }}
         key: ${{ secrets.RECETTE_APPLICATIONS_SSH_PRIVATE_KEY }}
         script: |
-          sudo mkdir -p /opt/applications/shared-tools/rabbitmq
-          sudo chmod ugo+rwx /opt/applications/shared-tools/rabbitmq
+          sudo mkdir -p /opt/shared-tools/rabbitmq
+          sudo chmod ugo+rwx /opt/shared-tools/rabbitmq
 
   copy-configs:
     name: "copy docker-compose configs"
@@ -45,8 +32,8 @@ jobs:
           port: ${{ secrets.RECETTE_APPLICATIONS_PORT }}
           username: ${{ secrets.RECETTE_APPLICATIONS_USERNAME }}
           key: ${{ secrets.RECETTE_APPLICATIONS_SSH_PRIVATE_KEY }}
-          source: "docker-compose.exemple.yml"
-          target: "/opt/applications/shared-tools/rabbitmq/"
+          source: "rabbitmq"
+          target: "/opt/shared-tools"
 
   run-container:
     name: "Run container"
@@ -61,6 +48,6 @@ jobs:
         username: ${{ secrets.RECETTE_APPLICATIONS_USERNAME }}
         key: ${{ secrets.RECETTE_APPLICATIONS_SSH_PRIVATE_KEY }}
         script: |
-          docker compose -f /opt/applications/shared-tools/rabbitmq/docker-compose.yml stop
-          docker compose -f /opt/applications/shared-tools/rabbitmq/docker-compose.yml rm -f
-          docker compose -f /opt/applications/shared-tools/rabbitmq/docker-compose.yml up -d
+          docker compose -f /opt/shared-tools/rabbitmq/docker-compose.yml stop
+          docker compose -f /opt/shared-tools/rabbitmq/docker-compose.yml rm -f
+          docker compose -f /opt/shared-tools/rabbitmq/docker-compose.yml up -d
