@@ -30,7 +30,6 @@ jobs:
           host: ${{ secrets.RECETTE_APPLICATIONS_HOST }}
           port: ${{ secrets.RECETTE_APPLICATIONS_PORT }}
           username: ${{ secrets.RECETTE_APPLICATIONS_USERNAME }}
-          password: ${{ secrets.RECETTE_APPLICATIONS_PASSWORD }}
           key: ${{ secrets.RECETTE_APPLICATIONS_SSH_PRIVATE_KEY }}
           source: "rabbitmq/docker-compose.yml"
           target: "/opt/shared-tools/rabbitmq"
@@ -46,7 +45,6 @@ jobs:
         host: ${{ secrets.RECETTE_APPLICATIONS_HOST }}
         port: ${{ secrets.RECETTE_APPLICATIONS_PORT }}
         username: ${{ secrets.RECETTE_APPLICATIONS_USERNAME }}
-        password: ${{ secrets.RECETTE_APPLICATIONS_PASSWORD }}
         key: ${{ secrets.RECETTE_APPLICATIONS_SSH_PRIVATE_KEY }}
         script: |
           docker compose -f /opt/shared-tools/rabbitmq/docker-compose.yml stop
