@@ -8,8 +8,9 @@ services:
     environment:
       - RABBITMQ_ERLANG_COOKIE=DSHEVCXBBETJJVJWTOWT
     ports:
-      - 29561:5672
-      - 29661:15672
+      - 5672:5672
+      - 15672:15672
+      - 61613:61613
     networks:
       - applications-network
 networks:
