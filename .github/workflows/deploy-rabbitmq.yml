@@ -37,7 +37,7 @@ jobs:
           username: ${{ secrets.RECETTE_APPLICATIONS_USERNAME }}
           key: ${{ secrets.RECETTE_APPLICATIONS_SSH_PRIVATE_KEY }}
           source: "rabbitmq/docker-compose.yml"
-          target: "/opt/shared-tools/rabbitmq"
+          target: "/opt/shared-tools"
 
   run-container:
     name: "Run container"
@@ -89,7 +89,7 @@ jobs:
           docker compose -f /opt/shared-tools/rabbitmq/docker-compose.yml exec -it rabbitmq-1 rabbitmqctl set_permissions -p "prod-notifications" "rbmq_admin" ".*" ".*" ".*"
           docker compose -f /opt/shared-tools/rabbitmq/docker-compose.yml exec -it rabbitmq-1 rabbitmqctl set_user_tags rbmq_admin administrator
   
-  
+
   create-exchanges-queues:
     name: Create exchanges-queues
     runs-on: ubuntu-latest
