@@ -18,8 +18,8 @@ jobs:
         username: ${{ secrets.RECETTE_APPLICATIONS_USERNAME }}
         key: ${{ secrets.RECETTE_APPLICATIONS_SSH_PRIVATE_KEY }}
         script: |
-          sudo mkdir -p /opt/shared-tools/rabbitmq
-          sudo chmod ugo+rwx /opt/shared-tools/rabbitmq
+          sudo mkdir -p /opt/shared-tools
+          sudo chmod ugo+rwx /opt/shared-tools
 
   copy-configs:
     name: "copy docker-compose configs"
@@ -89,7 +89,7 @@ jobs:
           docker compose -f /opt/shared-tools/rabbitmq/docker-compose.yml exec -it rabbitmq-1 rabbitmqctl set_permissions -p "prod-notifications" "rbmq_admin" ".*" ".*" ".*"
           docker compose -f /opt/shared-tools/rabbitmq/docker-compose.yml exec -it rabbitmq-1 rabbitmqctl set_user_tags rbmq_admin administrator
   
-
+  
   create-exchanges-queues:
     name: Create exchanges-queues
     runs-on: ubuntu-latest
