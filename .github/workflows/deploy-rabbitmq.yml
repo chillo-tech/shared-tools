@@ -1,9 +1,10 @@
 name: Update rabbitmq
 on:
+  workflow_dispatch:
   push:
     paths:
-      - 'rabbitmq/*.yml'
-      - '.github/workflows/deploy-rabbitmq.yml'
+    - 'rabbitmq/*.yml'
+    - '.github/workflows/deploy-rabbitmq.yml'
 jobs:
   
   create-folder:
